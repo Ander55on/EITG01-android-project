@@ -1,16 +1,40 @@
 package com.dankout.eitg01;
 
 public class Stop {
-    private String stopId;
-    private String stopName;
-    private String longitude;
-    private String latitude;
+    private String stopId; // Identifies a stop, station, or station entrance.
+    private String stopName; // Name of the location
+    private String longitude; // Longitude of the location.
+    private String latitude; // Latitude of the location.
+    private String locationType; // Type of the location: [0] stop or platform [1] station
+    private String parentStation; //Id that references the stopID
+    private String platformCode; //Platform identifier
 
-    public Stop(String stop_id, String stop_name, String longitude, String latitude) {
+
+    public Stop(String stop_id, String stop_name, String latitude, String longitude, String locationType) {
         this.stopId = stop_id;
         this.stopName = stop_name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.platformCode = null;
+        this.parentStation = null;
+        this.locationType = null;
+
+    }
+
+    public void setLocationType(String locationType) {
+        this.locationType = locationType;
+    }
+
+    public void setParentStation(String parentStation) {
+        this.parentStation = parentStation;
+    }
+
+    public String getPlatformCode() {
+        return this.platformCode;
+    }
+
+    public void setPlatformCode(String platformCode) {
+        this.platformCode = platformCode;
     }
 
     public String getStopId() {
@@ -44,9 +68,5 @@ public class Stop {
     public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
-
-
-
-
 
 }

@@ -1,6 +1,8 @@
 package com.dankout.eitg01;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,42 +17,67 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
         private TextView mMonitorTextView;
         private EditText mSearchStopField;
         private CardView mCardView;
         private RecyclerView mRecyclerView;
+        private StopManager mStopManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //region test purposes
-        Stop stop1 = new Stop("100", "Helsingborg C", "20", "20");
-        Stop stop2 = new Stop("100", "Malmö C", "20", "20");
-        ArrayList<Stop> stop = new ArrayList<>();
-        stop.add(stop1);
-        stop.add(stop2);
-        //endregion
+        mStopManager = StopManager.getInstance(this);
 
         mMonitorTextView = findViewById(R.id.monitor_question_text_field);
         mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
         mCardView = findViewById(R.id.stop_card_view);
         mRecyclerView = findViewById(R.id.bus_stop_list_view);
 
-        StopViewAdapter adapter = new StopViewAdapter(stop);
+
+        final StopViewAdapter adapter = new StopViewAdapter();
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
+        mSearchStopField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                adapter.filterList(mStopManager.getFilteredStops(editable.toString()));
+            }
+        });
+
     }
 
-    private static class StopViewAdapter extends RecyclerView.Adapter<StopViewAdapter.StopHolder> {
-        ArrayList<Stop> mStops;
+    private class StopViewAdapter extends RecyclerView.Adapter<StopViewAdapter.StopHolder> {
+        List<Stop> mStops;
 
-        public StopViewAdapter(ArrayList<Stop> stops) {
-            mStops = stops;
+        public StopViewAdapter() {
+            mStops = new ArrayList<Stop>();
+        }
+
+        /**
+         *
+         * @param filteredList The new list to be displayed in the view
+         */
+        public void filterList(@NonNull ArrayList<Stop> filteredList) {
+            mStops = filteredList;
+            //This method invokes both onCreateViewHolder and onBindViewHolder
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -62,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull StopHolder holder, int position) {
+                //Binds data to the textView that the stopHolder holds
                 holder.mBusStopNameTextView.setText(mStops.get(position).getStopName());
+                holder.mPlatformCodeTextView.setText(getString(R.string.platform_code,mStops.get(position).getPlatformCode()));
         }
 
         @Override
@@ -70,20 +99,23 @@ public class MainActivity extends AppCompatActivity {
             return mStops.size();
         }
 
-        private static class StopHolder extends RecyclerView.ViewHolder {
+        private class StopHolder extends RecyclerView.ViewHolder {
 
            private ImageView mImageView;
            private TextView mBusStopNameTextView;
+           private TextView mPlatformCodeTextView;
            private CardView mCardView;
 
             public StopHolder(@NonNull View itemView) {
                 super(itemView);
                 mCardView = itemView.findViewById(R.id.stop_list_item_card_view);
                 mImageView = itemView.findViewById(R.id.image_view_place);
+                mPlatformCodeTextView = itemView.findViewById(R.id.text_view_platform_code);
                 mBusStopNameTextView = itemView.findViewById(R.id.text_view_bus_stop_name);
 
             }
         }
+
 
     }
 
