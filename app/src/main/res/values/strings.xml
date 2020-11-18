@@ -3,4 +3,5 @@
     <string name="search_stop_hint">sök hållplats</string>
     <string name="var_vill_du_bevaka">Var vill du bevaka?</string>
     <string name="station_name">Station_name</string>
+    <string name="platform_code">Läge %s</string>
 </resources>
