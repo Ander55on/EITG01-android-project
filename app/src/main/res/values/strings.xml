@@ -4,4 +4,6 @@
     <string name="var_vill_du_bevaka">Var vill du bevaka?</string>
     <string name="station_name">Station_name</string>
     <string name="platform_code">Läge %s</string>
+    <string name="choose_map_text">VÄLJ PÅ KARTA</string>
+    <string name="title_activity_map">Map</string>
 </resources>
