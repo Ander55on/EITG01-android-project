@@ -1,10 +1,12 @@
 package com.dankout.eitg01;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,13 +18,14 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dankout.eitg01.map.MapActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-        private TextView mMonitorTextView;
         private EditText mSearchStopField;
-        private CardView mCardView;
+        private CardView mChooseMapCardView;
         private RecyclerView mRecyclerView;
         private StopManager mStopManager;
 
@@ -32,17 +35,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mStopManager = StopManager.getInstance(this);
-
-        mMonitorTextView = findViewById(R.id.monitor_question_text_field);
         mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
-        mCardView = findViewById(R.id.stop_card_view);
         mRecyclerView = findViewById(R.id.bus_stop_list_view);
-
+        mChooseMapCardView = findViewById(R.id.choose_map_card_view);
 
         final StopViewAdapter adapter = new StopViewAdapter();
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        mChooseMapCardView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startMapActivity();
+            }
+        });
 
         mSearchStopField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -63,11 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void startMapActivity() {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+
     private class StopViewAdapter extends RecyclerView.Adapter<StopViewAdapter.StopHolder> {
         List<Stop> mStops;
 
         public StopViewAdapter() {
-            mStops = new ArrayList<Stop>();
+            mStops = new ArrayList<>();
         }
 
         /**

@@ -102,6 +102,13 @@ public class StopManager {
     }
 
     /**
+     * @return An arraylist of all stations specified in stops.txt
+     */
+    public ArrayList<Stop> getStations() {
+        return this.mStations;
+    }
+
+    /**
      * @return An arraylist of all stops specified in stops.txt
      */
     public ArrayList<Stop> getStops() {
