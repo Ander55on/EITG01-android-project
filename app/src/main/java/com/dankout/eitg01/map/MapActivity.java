@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentActivity;
 import com.dankout.eitg01.R;
 import com.dankout.eitg01.Stop;
 import com.dankout.eitg01.StopManager;
+import com.dankout.eitg01.Watcher;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -19,14 +21,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, OnMarkerClickListener {
 
     private GoogleMap mMap;
-    private HashMap<Stop, Marker> mMarkerStopHashMap;
+    private HashMap<Marker, Stop> mMarkerStopHashMap;
     private ArrayList<Stop> stops;
     private float oldZoom = 0f;
     private boolean stopsVisible;
+    private Watcher mWatcher;
 
 
     @Override
@@ -38,17 +42,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mWatcher = Watcher.getInstance();
+
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -64,7 +61,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     .snippet(s.getPlatformCode()));
 
             m.setVisible(false);
-            mMarkerStopHashMap.put(s, m);
+            mMarkerStopHashMap.put(m, s);
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.990257, 13.595769), 7));
@@ -76,11 +73,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                 //Zoom and not just panning around
                 if (oldZoom != pos.zoom) {
-
+                    //only loops through the list of markers if visibility should be changed
                     if (pos.zoom > 14 && !stopsVisible || pos.zoom < 14 && stopsVisible) {
                         stopsVisible = pos.zoom > 14;
-                        for (Stop s : stops) {
-                            mMarkerStopHashMap.get(s).setVisible(stopsVisible);
+                        for (Map.Entry<Marker, Stop> m : mMarkerStopHashMap.entrySet()) {
+                            m.getKey().setVisible(stopsVisible);
                         }
                     }
 
@@ -89,7 +86,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         });
 
+        mMap.setOnMarkerClickListener(this);
+
     }
 
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        marker.showInfoWindow();
+        Stop stop = mMarkerStopHashMap.get(marker);
+        mWatcher.setStopToWatch(stop, 2);
+        return true;
+    }
 }

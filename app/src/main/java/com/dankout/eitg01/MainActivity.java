@@ -28,11 +28,14 @@ public class MainActivity extends AppCompatActivity {
         private CardView mChooseMapCardView;
         private RecyclerView mRecyclerView;
         private StopManager mStopManager;
+        private Watcher mWatcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.mWatcher = Watcher.getInstance();
 
         mStopManager = StopManager.getInstance(this);
         mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
@@ -99,10 +102,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull StopHolder holder, int position) {
+        public void onBindViewHolder(@NonNull StopHolder holder, final int position) {
                 //Binds data to the textView that the stopHolder holds
                 holder.mBusStopNameTextView.setText(mStops.get(position).getStopName());
                 holder.mPlatformCodeTextView.setText(getString(R.string.platform_code,mStops.get(position).getPlatformCode()));
+
+                holder.mCardView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mWatcher.setStopToWatch(mStops.get(position),2);
+                    }
+                });
         }
 
         @Override
