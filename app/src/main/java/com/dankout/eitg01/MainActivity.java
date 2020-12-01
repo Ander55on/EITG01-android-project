@@ -1,10 +1,17 @@
 package com.dankout.eitg01;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -23,21 +30,24 @@ import com.dankout.eitg01.map.MapActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DialogOnlickListener{
         private EditText mSearchStopField;
         private CardView mChooseMapCardView;
         private RecyclerView mRecyclerView;
         private StopManager mStopManager;
         private Watcher mWatcher;
+        public static final String CHANNEL_ID = "BusNotificationChannel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createNotificationChannel();
         setContentView(R.layout.activity_main);
 
-        this.mWatcher = Watcher.getInstance();
+        this.mWatcher = Watcher.getInstance(this);
 
         mStopManager = StopManager.getInstance(this);
+
         mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
         mRecyclerView = findViewById(R.id.bus_stop_list_view);
         mChooseMapCardView = findViewById(R.id.choose_map_card_view);
@@ -72,9 +82,54 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.menu, menu);
+
+        return true;
+    }
+
     private void startMapActivity() {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        mWatcher.stopWatching();
+        return true;
+    }
+
+    @Override
+    public void onPositiveClick() {
+        Log.d("MainActivity", "Positive click");
+        mWatcher.startWatching();
+    }
+
+    @Override
+    public void onNegativeClick() {
+        Log.d("MainActivity", "Negative click");
     }
 
     private class StopViewAdapter extends RecyclerView.Adapter<StopViewAdapter.StopHolder> {
@@ -111,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         mWatcher.setStopToWatch(mStops.get(position),2);
+                        WatchDialogFragment dialog = new WatchDialogFragment();
+                        dialog.show(getSupportFragmentManager(), null);
                     }
                 });
         }
@@ -136,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+
+
 
 
     }
