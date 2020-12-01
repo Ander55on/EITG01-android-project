@@ -6,4 +6,10 @@
     <string name="platform_code">Läge %s</string>
     <string name="choose_map_text">VÄLJ PÅ KARTA</string>
     <string name="title_activity_map">Map</string>
+    <string name="title_activity_maps_test2">Map</string>
+    <string name="alert_dialog_watcher_ok">Bevaka</string>
+    <string name="alert_dialog_watcher_cancel">Avbryt</string>
+    <string name="stop_watch_menu">Stoppa bevakning</string>
+    <string name ="channel_name">Watcher Channel</string>
+    <string name ="channel_description">Makes sound and pop up on screen</string>
 </resources>

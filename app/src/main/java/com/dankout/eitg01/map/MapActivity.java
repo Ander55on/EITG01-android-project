@@ -42,7 +42,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mWatcher = Watcher.getInstance();
+        mWatcher = Watcher.getInstance(this);
 
     }
 
