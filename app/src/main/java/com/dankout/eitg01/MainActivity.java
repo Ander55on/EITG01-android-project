@@ -36,32 +36,52 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
         private RecyclerView mRecyclerView;
         private StopManager mStopManager;
         private Watcher mWatcher;
+        private TextView mIsWatchingTextView;
         public static final String CHANNEL_ID = "BusNotificationChannel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Creates notification channels that is needed for API level 26+ will be ignored for lower APIs
         createNotificationChannel();
+
         setContentView(R.layout.activity_main);
 
+        //Class used for API calls and to check for if bus is close to a stop
         this.mWatcher = Watcher.getInstance(this);
 
-        mStopManager = StopManager.getInstance(this);
+        //Create stopmanager that will handle stops
+        this.mStopManager = StopManager.getInstance(this);
 
-        mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
-        mRecyclerView = findViewById(R.id.bus_stop_list_view);
-        mChooseMapCardView = findViewById(R.id.choose_map_card_view);
+        //Inflate widgets in the acitivity_main xml file
+        this.mSearchStopField = findViewById(R.id.search_bus_stop_edit_field);
+        this.mRecyclerView = findViewById(R.id.bus_stop_list_view);
+        this.mChooseMapCardView = findViewById(R.id.choose_map_card_view);
+        this.mIsWatchingTextView = findViewById(R.id.watching_ongoing);
+
+        String text;
+
+        if(mWatcher.isWatching()) {
+            text = getString(R.string.watching_is_ongoing, "Pågår");
+            mIsWatchingTextView.setText(text);
+        } else {
+            text = getString(R.string.watching_is_ongoing, "stoppad");
+        }
+        mIsWatchingTextView.setText(text);
 
         final StopViewAdapter adapter = new StopViewAdapter();
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        this.mRecyclerView.setAdapter(adapter);
+        this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mChooseMapCardView.setOnClickListener(new OnClickListener() {
+        //Set clicklistener to start google maps
+        this.mChooseMapCardView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 startMapActivity();
             }
         });
+
 
         mSearchStopField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -76,9 +96,12 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
 
             @Override
             public void afterTextChanged(Editable editable) {
+                //Send the list to be displayed to the recycler adapter
                 adapter.filterList(mStopManager.getFilteredStops(editable.toString()));
             }
         });
+
+
 
     }
 
@@ -100,17 +123,33 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        String text;
+
+        if(mWatcher.isWatching()) {
+            text = getString(R.string.watching_is_ongoing, "Pågår");
+            mIsWatchingTextView.setText(text);
+        } else {
+            text = getString(R.string.watching_is_ongoing, "stoppad");
+        }
+        mIsWatchingTextView.setText(text);
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Set a menu button -> stop watch button
         MenuInflater inflater = getMenuInflater();
-
         inflater.inflate(R.menu.menu, menu);
 
         return true;
     }
 
     private void startMapActivity() {
+        //creates a new intent to start the map activity
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
@@ -118,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         mWatcher.stopWatching();
+        String text = getString(R.string.watching_is_ongoing, "stoppad");
+        mIsWatchingTextView.setText(text);
         return true;
     }
 
@@ -125,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
     public void onPositiveClick() {
         Log.d("MainActivity", "Positive click");
         mWatcher.startWatching();
+        String text = getString(R.string.watching_is_ongoing, "Pågår");
+        mIsWatchingTextView.setText(text);
     }
 
     @Override
@@ -162,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements DialogOnlickListe
                 holder.mBusStopNameTextView.setText(mStops.get(position).getStopName());
                 holder.mPlatformCodeTextView.setText(getString(R.string.platform_code,mStops.get(position).getPlatformCode()));
 
+                //Set an Onclicklistener on every item in the recycler view
                 holder.mCardView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {

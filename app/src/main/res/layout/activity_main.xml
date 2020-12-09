@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="10dp">
+           >
 
             <TextView
                 android:id="@+id/monitor_question_text_field"
@@ -25,6 +25,9 @@
                 android:padding="24dp"
                 android:text="@string/var_vill_du_bevaka"
                 android:textSize="24sp" />
+
+
+
 
             <EditText
                 android:id="@+id/search_bus_stop_edit_field"
@@ -36,7 +39,19 @@
                 android:hint="@string/search_stop_hint"
                 android:inputType="text"
                 android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/watching_ongoing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="2dp"
+                android:text="@string/watching_is_ongoing"
+                />
+
         </LinearLayout>
+
+
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -52,6 +67,10 @@
             android:padding="16dp"
             android:text="@string/choose_map_text" />
     </androidx.cardview.widget.CardView>
+
+
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bus_stop_list_view"

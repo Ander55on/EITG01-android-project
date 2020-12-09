@@ -7,16 +7,19 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class StopManager {
     private ArrayList<Stop> mStops;
     private ArrayList<Stop> mStations;
+    private HashMap<String, Stop> mStopHashMap;
     private static StopManager instance;
 
     private StopManager(Context context) {
         mStops = new ArrayList<>();
         mStations = new ArrayList<>();
+        mStopHashMap = new HashMap<>();
         readFromFile(context);
     }
 
@@ -24,10 +27,10 @@ public class StopManager {
      * @return An instance of the StopManager
      */
     public static StopManager getInstance(Context context) {
-        if (instance == null) {
-            instance = new StopManager(context);
-        }
-        return instance;
+            if (instance == null) {
+                instance = new StopManager(context);
+            }
+            return instance;
     }
 
     /* [0] = stop_id
@@ -55,10 +58,12 @@ public class StopManager {
             mStations.add(stop);
         } else {
             mStops.add(stop);
+            mStopHashMap.put(stop.getStopId(), stop);
         }
 
     }
 
+    //Read from the resource .txt file that contains all the stops in skåne
     private void readFromFile(Context context) {
 
         Scanner reader;
@@ -99,6 +104,10 @@ public class StopManager {
         }
 
         return temp;
+    }
+
+    public Stop getStop(String id) {
+        return this.mStopHashMap.get(id);
     }
 
     /**
