@@ -12,4 +12,5 @@
     <string name="stop_watch_menu">Stoppa bevakning</string>
     <string name ="channel_name">Watcher Channel</string>
     <string name ="channel_description">Makes sound and pop up on screen</string>
+    <string name="watching_is_ongoing">Bevakning %1$s</string>
 </resources>

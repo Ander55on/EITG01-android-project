@@ -23,6 +23,7 @@ public class WatchDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ((DialogOnlickListener)getActivity()).onPositiveClick();
+
                     }
                 })
                 .setNegativeButton(R.string.alert_dialog_watcher_cancel, new OnClickListener() {

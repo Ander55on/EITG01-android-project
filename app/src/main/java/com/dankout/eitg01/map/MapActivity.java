@@ -4,9 +4,11 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.dankout.eitg01.DialogOnlickListener;
 import com.dankout.eitg01.R;
 import com.dankout.eitg01.Stop;
 import com.dankout.eitg01.StopManager;
+import com.dankout.eitg01.WatchDialogFragment;
 import com.dankout.eitg01.Watcher;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, OnMarkerClickListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, OnMarkerClickListener, DialogOnlickListener {
 
     private GoogleMap mMap;
     private HashMap<Marker, Stop> mMarkerStopHashMap;
@@ -96,6 +98,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         marker.showInfoWindow();
         Stop stop = mMarkerStopHashMap.get(marker);
         mWatcher.setStopToWatch(stop, 2);
+        WatchDialogFragment dialog = new WatchDialogFragment();
+        dialog.show(getSupportFragmentManager(), null);
         return true;
+    }
+
+    @Override
+    public void onPositiveClick() {
+        mWatcher.startWatching();
+    }
+
+    @Override
+    public void onNegativeClick() {
+
     }
 }
